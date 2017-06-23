@@ -4,15 +4,15 @@ import cherrypy
 from decorator import decorator
 
 from voting import conf
+from voting.api import api
+from voting.helpers import session
 from voting.helpers import validate_admin
 from voting.helpers import validate_password
 from voting.views import AdminView
 from voting.views import LoginView
-from voting.views import WelcomeView
 from voting.views import RegisterView
-import json
-from voting.api import api
-from voting.helpers import session
+from voting.views import WelcomeView
+
 
 @decorator
 def login_required(f, *args, **kw):

@@ -1,8 +1,9 @@
-from voting.context import context
-from voting.data_interactions import get_list_of_users
 from mako.template import Template
-from voting.data_interactions import get_user
+
+from voting.context import context
 from voting.data_interactions import get_list_of_teams
+from voting.data_interactions import get_list_of_users
+from voting.data_interactions import get_user
 from voting.data_interactions import get_users_not_assigned_to_teams
 
 
