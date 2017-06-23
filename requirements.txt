@@ -4,3 +4,4 @@ hiredis
 addict
 mako
 decorator
+better-exceptions
