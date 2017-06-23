@@ -13,8 +13,10 @@ def AdminView():
         users=get_list_of_users(),
         get_user=get_user,
         teams=list(context.redis.smembers('teams')),
-        unassigned_users=get_users_not_assigned_to_teams
+        # unassigned_users=get_users_not_assigned_to_teams
+        unassigned_users=lambda: [b'tester']
     )
+
 
 def LoginView(*args, error=None, **kw):
     print(error)

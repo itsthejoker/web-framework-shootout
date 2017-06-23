@@ -84,6 +84,13 @@ def update_user(username, password=None, name=None, team=None, admin=None):
 
 # delete_user('tester')
 # create_new_user('tester', 'test', name='Testy McTesterson', admin=True)
+# create_new_user('arnohld@thegovernator.com', 'test', name='The Schwartzmeister', admin=False)
+# create_new_user('thefunnyone@topgear.co.uk', 'test', name='James May', admin=False)
+# create_new_user('knockknockwhosthere@thedoctor.com', 'test', name='Doctor Who', admin=True)
+# create_new_user('notch@minecraft.net', 'test', name='Markus Persson', admin=True)
+# update_user('notch@minecraft.net', name="Markus Persson")
+
+
 
 # *****************************************
 #   _______ ______          __  __  _____
@@ -156,15 +163,21 @@ def delete_team(team):
 
 
 def add_user_to_team(username, team):
-    team = get_team(team)
-    team['members'] = team['members'].append(username)
-    context.redis.set(pickle.dumps(team))
+    team_obj = get_team(team)
+    if team_obj is None:
+        return
+    if not team_obj.get('members', None):
+        team_obj['members'] = []
+        team_obj['members'] = team_obj['members'].append(username)
+    context.redis.set(team, pickle.dumps(team_obj))
 
 
 def remove_user_from_team(username, team):
-    team = get_team('event::' + team)
-    team['members'] = team['members'].pop(username)
-    context.redis.set(pickle.dumps(team))
+    team_obj = get_team(team)
+    if not team_obj.get('members', None):
+        return
+    team_obj['members'] = team_obj['members'].pop(username)
+    context.redis.set(team, pickle.dumps(team_obj))
 
 
 def get_team_of_user(username):
@@ -173,7 +186,14 @@ def get_team_of_user(username):
         if username in get_team(team)['members']:
             return team
 
-
+# add_team('Gryffindor')
+# add_team('Ravenclaw'
+# )
+# add_team('Hufflepuff')
+# add_team('Slytherin')
+# add_user_to_team('arnohld@thegovernator.com', 'Gryffindor')
+# add_user_to_team('knockknockwhosthere@thedoctor.com', 'Gryffindor')
+# add_user_to_team('notch@minecraft.net', 'Ravenclaw')
 # *********************************************
 #   ________      ________ _   _ _______ _____
 #  |  ____\ \    / /  ____| \ | |__   __/ ____|
