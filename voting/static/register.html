@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <title>${title}</title>
+
+    <!-- Bootstrap core CSS -->
+    <link href="css/bootstrap.css" rel="stylesheet">
+
+    <!-- Custom styles for this template -->
+    <link href="css/login.css" rel="stylesheet">
+</head>
+
+<body>
+<!-- Static navbar -->
+<nav class="navbar navbar-inverse navbar-fixed-top">
+    <div class="container-fluid">
+        <div class="navbar-header">
+            <a class="navbar-brand" href="/">${title}</a>
+        </div>
+        <div id="navbar" class="navbar-collapse collapse">
+            <ul class="nav navbar-nav">
+                <li><a href="/">Home</a></li>
+                <li><a href="/admin">Admin</a></li>
+                <li class="active"><a href="/register">Register</a></li>
+            </ul>
+        </div><!--/.nav-collapse -->
+    </div><!--/.container-fluid -->
+</nav>
+
+<div class="container">
+    <div class="row">
+        <br>
+        <div class="col-md-3">
+        </div>
+        <div class="col-md-6">
+            <h2>Register</h2>
+
+            <div class="input-group">
+                <span class="input-group-addon" id="newUserEmail">email</span>
+                <input type="text" class="form-control"
+                       aria-describedby="new user email address">
+            </div>
+            <div class="text-muted">
+                &emsp;ex: john@keepingupwiththesmiths.com
+            </div>
+            <div class="input-group">
+                <span class="input-group-addon" id="newUserPassword">password</span>
+                <input type="password" class="form-control" aria-describedby="new user password">
+            </div>
+            <div class="text-muted">
+                &emsp;ex: hunter2
+            </div>
+            <div class="input-group">
+                <span class="input-group-addon" id="newUserName">name</span>
+                <input type="text" class="form-control"
+                       aria-describedby="new user full name">
+            </div>
+            <div class="text-muted">
+                &emsp;ex: John Smith
+            </div>
+            <div class="input-group">
+                <span class="input-group-addon" id="newUserTeam">team</span>
+                <select class="form-control" id="teamDropdown" aria-describedby="dropdown for team">
+                    <option>None</option>
+                    % for t in teams:
+                    <option>${str(t).strip('\'')[2:]}</option>
+                    % endfor
+                </select>
+            </div>
+            <div class="text-muted">
+                &emsp;
+            </div>
+            <input class="btn btn-lg btn-success btn-primary btn-block" type="button" value="Register!"
+                   id="registerButton" onclick="createUser()"/>
+        </div>
+        <div class="col-md-3">
+        </div>
+    </div>
+</div> <!-- /container -->
+<!-- Bootstrap core JavaScript
+================================================== -->
+<script src="js/jquery.min.js"></script>
+<script>window.jQuery || document.write('<script src="js/jquery.min.js"><\/script>')</script>
+<script src="js/bootstrap.min.js"></script>
+<script>
+    function createUser() {
+        var email = document.getElementById("newUserEmail").value,
+            pass = document.getElementById("newUserPasswordField").value,
+            name = document.getElementById("newUserName").value,
+            team = document.getElementById("newUserTeam").value;
+        for (var i = 0; i < arrayLength; i++) {
+            var data = {
+                username: email,
+                password: pass,
+                name: name,
+                team: team
+            };
+            $.ajax({
+                type: "POST",
+                url: "api/user",
+                data: JSON.stringify(data),
+                contentType: 'application/json',
+                dataType: 'json',
+                success: function (response) {
+                    if (response['result'] === 'success') {
+                        $('#userResetPasswordModal .modal-body, #changePasswordConfirmButton').prepend(
+                            "<div class='alert alert-success alert-dismissable fade in'><a href='#' class='close' data-dismiss='alert' aria-label='close'>&times;</a>Account created!</div>"
+                        )
+                    } else {
+                        $('#userResetPasswordModal .modal-body, #changePasswordConfirmButton').prepend(
+                            "<div class='alert alert-danger alert-dismissable fade in'><a href='#' class='close' data-dismiss='alert' aria-label='close'>&times;</a>Username already exists!</div>"
+                        )
+                    }
+                }
+            })
+        }
+    }
+</script>
+</body>
+</html>

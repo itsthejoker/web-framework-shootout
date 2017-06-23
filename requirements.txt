@@ -1,0 +1,6 @@
+cherrypy
+redis<3.0.0
+hiredis
+addict
+mako
+decorator

@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <title>${title}</title>
+
+    <!-- Bootstrap core CSS -->
+    <link href="css/bootstrap.css" rel="stylesheet">
+    <link href="css/login.css" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" href="plugins/DataTables/datatables.min.css"/>
+    <link href="css/custom.css" rel="stylesheet">
+</head>
+
+<body>
+<!-- Static navbar -->
+<nav class="navbar navbar-inverse navbar-fixed-top">
+    <div class="container-fluid">
+        <div class="navbar-header">
+            <a class="navbar-brand" href="/">${title}</a>
+        </div>
+        <div id="navbar" class="navbar-collapse collapse">
+            <ul class="nav navbar-nav">
+                <li><a href="/">Home</a></li>
+                <li class="active"><a href="/admin">Admin</a></li>
+            </ul>
+        </div><!--/.nav-collapse -->
+    </div><!--/.container-fluid -->
+</nav>
+<div class="container">
+    <br>
+    <h2>Users</h2>
+    <div class="dropdown">
+        <button class="btn btn-default dropdown-toggle" type="button" id="userActionDropdown"
+                data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+            User Actions
+            <span class="caret"></span>
+        </button>
+        <ul class="dropdown-menu" aria-labelledby="user action dropdown">
+            <li><a data-toggle="modal" href="#userResetPasswordModal" id="userResetPasswordButton">Reset Password</a>
+            </li>
+            <li><a data-toggle="modal" href="#userChangeTeamModal" id="userChangeTeamButton">Change Team</a></li>
+            <li><a data-toggle="modal" href="#myModal">Delete User</a></li>
+        </ul>
+    </div>
+    <br>
+    <table class="table table-hover" id="userTable">
+        <thead>
+        <tr>
+            <th>Username</th>
+            <th>Name</th>
+            <th>Team</th>
+            <th>Voted?</th>
+            <th>Admin</th>
+        </tr>
+        </thead>
+        <tbody>
+        % for a in users:
+        <tr>
+            <%
+            a = str(a).strip('\'')[2:]
+            a = get_user(a)
+            %>
+            <td>${a['username']}</td>
+            <td>${a['name']}</td>
+            <td>${a['team']}</td>
+            <td>${a['vote'] is not None}</td>
+            <td>${['A' if a['admin'] else ''][0]}</td>
+        </tr>
+        % endfor
+        </tbody>
+    </table>
+    <div class="row">
+        <div class="col-md-6">
+            <h2>Create New User</h2>
+
+            <div class="input-group">
+                <span class="input-group-addon" id="newUserEmail">email</span>
+                <input type="text" class="form-control"
+                       aria-describedby="new user email address">
+            </div>
+            <div class="text-muted">
+                &emsp;ex: john@keepingupwiththesmiths.com
+            </div>
+            <div class="input-group">
+                <span class="input-group-addon" id="newUserPassword">password</span>
+                <input type="password" class="form-control" aria-describedby="new user password">
+            </div>
+            <div class="text-muted">
+                &emsp;ex: hunter2
+            </div>
+            <div class="input-group">
+                <span class="input-group-addon" id="newUserName">name</span>
+                <input type="text" class="form-control"
+                       aria-describedby="new user full name">
+            </div>
+            <div class="text-muted">
+                &emsp;ex: John Smith
+            </div>
+            <div class="input-group">
+                <span class="input-group-addon" id="newUserTeam">team</span>
+                <select class="form-control" id="teamDropdown" aria-describedby="dropdown for team">
+                    <option>None</option>
+                    % for t in teams:
+                    <option>${str(t).strip('\'')[2:]}</option>
+                    % endfor
+                </select>
+            </div>
+            <div class="text-muted">
+                &emsp;
+            </div>
+            <div class="input-group">
+                <span class="input-group-addon" id="newUserAdmin">admin</span>
+                <select class="form-control" id="adminCheckbox" aria-describedby="checkbox for admin access">
+                    <option>No</option>
+                    <option>Yes</option>
+                </select>
+            </div>
+            <br>
+            <input class="btn btn-lg btn-success btn-primary btn-block" type="button" value="Create User"
+                   id="createUser" onclick="createUser()"/>
+        </div>
+        <div class="col-md-3">
+            <h2>Create Team</h2>
+            <div class="input-group">
+                <span class="input-group-addon" id="newTeamName">name</span>
+                <input type="text" class="form-control" placeholder="team name" aria-describedby="new team name">
+            </div>
+            <input class="btn btn-md btn-primary btn-block" type="button" value="Add Users to Team" data-toggle="modal"
+                   data-target="#selectUnassignedUsersModal"></button>
+            <br>
+            <input class="btn btn-lg btn-success btn-primary btn-block" type="button" value="Create Team"
+                   id="submitTeam" onclick="createTeam()"/>
+        </div>
+
+        <div class="col-md-3">
+            <h2>Delete Team</h2>
+            <div class="input-group">
+                <span class="input-group-addon" id="userTeamToDelete">team</span>
+                <select class="form-control" id="teamDeleteDropdown" aria-describedby="dropdown for team to delete">
+                    <option>None</option>
+                    % for t in teams:
+                    <option>${str(t).strip('\'')[2:]}</option>
+                    % endfor
+                </select>
+            </div>
+            <br>
+            <input class="btn btn-lg btn-danger btn-primary btn-block" type="button" value="Delete Team"
+                   id="deleteTeam" onclick="deleteTeam()"/>
+        </div>
+    </div>
+    <!-- Modal -->
+    <div class="modal fade" id="selectUnassignedUsersModal" role="dialog">
+        <div class="modal-dialog">
+
+            <!-- Modal content-->
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h4 class="modal-title">Unassigned Users</h4>
+                </div>
+                <div class="modal-body">
+                    <%
+                    ua = unassigned_users()
+                    cleaned_users = []
+                    for person in ua:
+                        cleaned_users.append(get_user(str(person).strip('\'')[2:]))
+                    %>
+                    Select the users you wish to add to this team.
+                    <table class="table table-hover" id="unassignedUserTable">
+                        <thead>
+                        <tr>
+                            <th>Select</th>
+                            <th>Username</th>
+                            <th>Name</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr>
+                            % for a in cleaned_users:
+                            <div class="form-check">
+                                <label class="form-check-label">
+                                    <td><input class="form-check-input" type="checkbox" value="${a}"></td>
+
+                                    <td>${a['username']}</td>
+                                    <td>${a['name']}</td>
+                                </label>
+
+                                % endfor
+                            </div>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal fade" id="userResetPasswordModal" role="dialog">
+        <div class="modal-dialog">
+
+            <!-- Modal content-->
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h4 class="modal-title">Reset User Password(s)</h4>
+                </div>
+                <div class="modal-body">
+                    <h5>
+                        You're going to be modifying the following users:
+                    </h5>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal fade" id="userChangeTeamModal" role="dialog">
+        <div class="modal-dialog">
+
+            <!-- Modal content-->
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h4 class="modal-title">Change User Teams</h4>
+                </div>
+                <div class="modal-body">
+                    <h5>
+                        You're going to be changing the teams for the following users:
+                    </h5>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="hidden">
+        <div class="input-group" id="superSecretGeneratedTeamList">
+            <span class="input-group-addon" id="userTeam">team</span>
+            <select class="form-control" id="teamDropdown" aria-describedby="dropdown to list teams">
+                <option>None</option>
+                % for t in teams:
+                <option>${str(t).strip('\'')[2:]}</option>
+                % endfor
+            </select>
+        </div>
+    </div>
+</div> <!-- /container -->
+<!-- Bootstrap core JavaScript
+================================================== -->
+
+
+<script src="js/jquery.min.js"></script>
+<script>window.jQuery || document.write('<script src="js/jquery.min.js"><\/script>')</script>
+<!--<script src="plugins/DataTables/jQuery-2.2.4/jquery-2.2.4.min.js"></script>-->
+<script src="js/bootstrap.min.js"></script>
+<script type="text/javascript" src="plugins/DataTables/datatables.min.js"></script>
+<script>
+    $(document).ready(function () {
+        var table = $('#userTable').DataTable();
+        $('#userTable tbody').on('click', 'tr', function () {
+            $(this).toggleClass('active');
+        });
+
+        $('#userResetPasswordButton').click(function () {
+            var array = table.rows('.active').data();
+            var arrayLength = array.length;
+            // nuke the existing information if it's there so it doesn't double up
+            $('#user-warning').remove();
+            $('#passwordResetUserEntry').remove();
+            $('#newPasswordConfirm').remove();
+            if (arrayLength === 0) {
+                $('#userResetPasswordModal .modal-body, .h5').append('<div class="alert-warning" id="user-warning">There are no users selected. Please select some users from the user table.</div>')
+            } else {
+                for (var i = 0; i < arrayLength; i++) {
+                    // now generate a list of the selected users
+                    $('#userResetPasswordModal .modal-body, .h5').append('<span id="passwordResetUserEntry">' + array[i][0] + '<br></span>')
+                }
+                var selector = $('#userResetPasswordModal .modal-body, #passwordResetUserEntry');
+                selector.last().append(
+                    '<div id="newPasswordConfirm"><br><div class="input-group">\
+                        <span class="input-group-addon" id="newUserPassword">New Password</span>\
+                        <input type="password" class="form-control" id="newUserPasswordField" aria-describedby="new user password">\
+                     </div><br>');
+                selector.last().append($('#superSecretGeneratedTeamList'));
+                selector.last().append(
+                    '<br><input class="btn btn-md btn-success btn-primary btn-block" type="button" value="Modify Users"\
+                   id="changePasswordConfirmButton" onclick="submitUserChanges()"/></div>')
+            }
+
+        });
+        $('#userChangeTeamButton').click(function () {
+            var array = table.rows('.active').data();
+            var arrayLength = array.length;
+            // nuke the existing information if it's there so it doesn't double up
+            $('#user-warning').remove();
+            $('#passwordResetUserEntry').remove();
+            $('#newPasswordConfirm').remove();
+            if (arrayLength === 0) {
+                $('#userChangeTeamModal .modal-body, .h5').append('<div class="alert-warning" id="user-warning">There are no users selected. Please select some users from the user table.</div>')
+            } else {
+                for (var i = 0; i < arrayLength; i++) {
+                    // now generate a list of the selected users
+                    $('#userChangeTeamModal .modal-body, .h5').append('<span id="teamChangeUserEntry">' + array[i][0] + '<br></span>')
+                }
+                $('#userChangeTeamModal .modal-body, #teamChangeUserEntry').last().append(
+                    '<div id="newPasswordConfirm"><br><div class="input-group">\
+                        <span class="input-group-addon" id="newUserPassword">New Team</span>\
+                        <input type="password" class="form-control" id="newUserPasswordField" aria-describedby="new user team">\
+                     </div><br><input class="btn btn-md btn-success btn-primary btn-block" type="button" value="Change Teams"\
+                   id="changeTeamConfirmationButton" onclick="submitUserChanges()"/></div>');
+            }
+
+        });
+    });
+    function submitUserChanges() {
+        var table = $('#userTable').DataTable(),
+            array = table.rows('.active').data(),
+            arrayLength = array.length,
+            pass = document.getElementById("newUserPasswordField").value;
+        for (var i = 0; i < arrayLength; i++) {
+            var data = {
+                username: array[i][0],
+                password: pass,
+                name: array[i][1],
+                team: array[i][2],
+                admin: array[i][4]
+            };
+            $.ajax({
+                type: "POST",
+                url: "api/user/update",
+                data: JSON.stringify(data),
+                contentType: 'application/json',
+                dataType: 'json',
+                success: function (response) {
+                    if (response['result'] === 'success') {
+                        $('#userResetPasswordModal .modal-body, #changePasswordConfirmButton').prepend(
+                            "<div class='alert alert-success alert-dismissable fade in'><a href='#' class='close' data-dismiss='alert' aria-label='close'>&times;</a>Updated password!</div>"
+                        )
+                    }
+                }
+            })
+        }
+    }
+</script>
+</body>
+</html>
