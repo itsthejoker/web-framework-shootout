@@ -15,16 +15,16 @@ conf = {
     '/': {
         'tools.sessions.on': True
     },
-   # '/app': {
-   #     'tools.auth_basic.on': True,
-   #     'tools.auth_basic.realm': 'localhost',
-   #     'tools.auth_basic.checkpassword': validate_password
-   #  },
-   #  '/admin': {
-   #      'tools.auth_basic.on': True,
-   #      'tools.auth_basic.realm': 'localhost',
-   #      'tools.auth_basic.checkpassword': validate_admin
-   #  },
+    # '/app': {
+    #     'tools.auth_basic.on': True,
+    #     'tools.auth_basic.realm': 'localhost',
+    #     'tools.auth_basic.checkpassword': validate_password
+    #  },
+    #  '/admin': {
+    #      'tools.auth_basic.on': True,
+    #      'tools.auth_basic.realm': 'localhost',
+    #      'tools.auth_basic.checkpassword': validate_admin
+    #  },
     # For all static directories, staticdir needs an absolute path
     # This is easily one of the most confusing things starting out
     # about CherryPy

@@ -187,8 +187,7 @@ def get_team_of_user(username):
             return team
 
 # add_team('Gryffindor')
-# add_team('Ravenclaw'
-# )
+# add_team('Ravenclaw')
 # add_team('Hufflepuff')
 # add_team('Slytherin')
 # add_user_to_team('arnohld@thegovernator.com', 'Gryffindor')
