@@ -1,21 +1,20 @@
 import cherrypy
-
 from decorator import decorator
 
+from voting.data_interactions import add_event
+from voting.data_interactions import add_team
+from voting.data_interactions import create_new_user
+from voting.data_interactions import delete_event
+from voting.data_interactions import delete_team
+from voting.data_interactions import edit_event
+from voting.data_interactions import get_event
+from voting.data_interactions import get_list_of_teams
+from voting.data_interactions import get_team
+from voting.data_interactions import get_user
+from voting.data_interactions import update_user
 from voting.helpers import session
 from voting.helpers import validate_admin
 from voting.helpers import validate_password
-from voting.data_interactions import create_new_user
-from voting.data_interactions import update_user
-from voting.data_interactions import get_user
-from voting.data_interactions import add_team
-from voting.data_interactions import delete_team
-from voting.data_interactions import get_list_of_teams
-from voting.data_interactions import add_event
-from voting.data_interactions import delete_event
-from voting.data_interactions import edit_event
-from voting.data_interactions import get_team
-from voting.data_interactions import get_event
 
 __all__ = ['api']
 

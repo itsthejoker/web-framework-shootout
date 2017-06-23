@@ -2,9 +2,10 @@ import binascii
 import hashlib
 import pickle
 
+import cherrypy
+
 from voting.context import context
 
-import cherrypy
 
 class session(object):
     # I love small, reusable functions
